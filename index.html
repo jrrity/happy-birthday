@@ -394,7 +394,7 @@
     .candle.blown .candle-body { filter: saturate(0.5) brightness(0.85); }
 
     .blow-controls {
-      margin-top: 18px;
+      margin-top: -3px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -429,19 +429,31 @@
       color: #c084fc;
     }
 
-    .wish-message {
-      margin-top: 8px;
-      font-size: 20px;
-      font-weight: 700;
-      color: #fde68a;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .wish-message.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    /* ========== Upgraded Wish Message CSS ========== */
+.wish-message {
+  margin-top: 20px;
+  font-size: 32px;               /* Made it much bigger */
+  font-weight: 800;              /* Extra bold */
+  font-family: 'Georgia', serif; /* Adds an elegant, magical feel */
+  background: linear-gradient(45deg, #ffe600, #f0abfc, #ff9d2f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  
+  /* Creates a brilliant magical neon aura around the text */
+  filter: drop-shadow(0 0 12px rgba(240, 171, 252, 0.8)) drop-shadow(0 0 25px rgba(234, 179, 8, 0.4));
+  
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); /* Juicy pop animation */
+}
+
+/* Smooth hidden state when the candle is blown out */
+.wish-message.hidden {
+  opacity: 0;
+  transform: translateY(15px) scale(0.85); /* Sinks down and shrinks cleanly */
+  filter: drop-shadow(0 0 0px transparent);
+}
 
     /* CTA */
     .cta {
@@ -503,7 +515,7 @@
 
     <p class="message">
       Wishing you an absolute god-tier birthday, Swara! 🚀 Your streams are hitting different, your grind is paying off, and the community keeps getting bigger every single day. <br/><br/>
-      Go ahead and <span class="highlight">be a pro in every game</span> you touch... but just remember, you can't hide from me in <span class="highlight">Meccha</span>! 😉 Keep shining, keep dominating, and have an incredible year ahead!
+      Go ahead and <span class="highlight">be a pro in every game</span> you touch... but just remember, you can't hide from me in <span class="highlight">mecha</span>! 😉 Keep shining, keep dominating, and have an incredible year ahead!
     </p>
 
     <div class="cakes">
@@ -552,12 +564,12 @@
     </div>
 
     <div class="blow-controls">
+      <p class="wish-message" id="wishMessage">Make a wish, Swara... 💜</p>
       <p class="wish-hint" id="wishHint">🕯️ Click the candles to blow them all out, or use your mic and really blow!</p>
       <button class="mic-btn" id="micBtn">
         <span id="micIcon">🎤</span>
         <span id="micText">Blow With Mic</span>
       </button>
-      <p class="wish-message" id="wishMessage">Make a wish, Swara... 💜</p>
     </div>
 
     <p class="cta">Click the balloons to pop them! 🎈</p>
@@ -677,19 +689,29 @@
     onAllCandlesBlown();
   }
 
-  function relightCandles() {
-    document.querySelectorAll(".candle").forEach(c => c.classList.remove("blown"));
-    candlesLit = CANDLE_COUNT;
-    wishMessage.classList.remove("show");
-    wishHint.textContent = "🕯️ Click the candles to blow them all out, or use your mic and really blow!";
-  }
+ function onAllCandlesBlown() {
+  wishHint.textContent = "🎉 All candles out!";
+  
+  // 1. Instantly update the text to the success message
+  wishMessage.textContent = "Your wish is granted! ✨";
+  
+  // 2. Add a special class if you want to style the success message differently (optional)
+  wishMessage.classList.add("granted");
+  
+  spawnCenterConfetti();
+  setTimeout(relightCandles, 4000);
+}
 
-  function onAllCandlesBlown() {
-    wishHint.textContent = "🎉 All candles out — wish granted!";
-    wishMessage.classList.add("show");
-    spawnCenterConfetti();
-    setTimeout(relightCandles, 4000);
-  }
+function relightCandles() {
+  document.querySelectorAll(".candle").forEach(c => c.classList.remove("blown"));
+  candlesLit = CANDLE_COUNT;
+  
+  // 3. Reset the text back to the original prompt when the candles relight
+  wishMessage.classList.remove("granted");
+  wishMessage.textContent = "Make a wish, Swara... 💜";
+  
+  wishHint.textContent = "🕯️ Click the candles to blow them all out, or use your mic and really blow!";
+}
 
   /* ========== Mic-based Blowing ========== */
   const micBtn = document.getElementById("micBtn");
